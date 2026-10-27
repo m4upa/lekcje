@@ -77,18 +77,86 @@ main{padding:12px 12px calc(24px + env(safe-area-inset-bottom));max-width:640px;
 .seg button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 @media(max-width:380px){h1{font-size:17px}.s{font-size:15px}.n{min-width:38px}.n b{font-size:18px}.l{padding:8px;gap:8px}.day{font-size:12px}}
 @media(min-width:700px){main{padding-top:20px}#sheet{align-items:center}.pan{border-radius:20px}}
+
+/* ===== odświeżony wygląd ===== */
+:root{--r:16px;--sh:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.06)}
+header{border-radius:0 0 22px 22px;box-shadow:0 6px 20px rgba(0,0,0,.18);padding-bottom:12px}
+.top{gap:10px}
+.tt{flex:1;min-width:0}
+.ico{margin-left:0;flex:none;width:42px;height:42px;border-radius:12px;transition:background .15s,transform .15s}
+.ico:active{transform:scale(.92);background:rgba(255,255,255,.28)}
+h1{font-size:19px;letter-spacing:-.01em}
+.sub{font-size:12px;opacity:.75}
+.wk{margin-top:12px}
+.wk span{font-weight:600;font-size:14px;opacity:1}
+.wk button{background:rgba(255,255,255,.14);border-radius:10px;font-size:18px}
+.days{gap:6px;margin-top:10px}
+.day{border-radius:14px;font-weight:600;transition:background .15s,transform .15s}
+.day:active{transform:scale(.95)}
+.day.act{background:var(--ac);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+main{padding-top:16px}
+.l{border-radius:var(--r);box-shadow:var(--sh);border-left-width:5px;padding:12px;gap:12px;align-items:center}
+.l::before{opacity:.13}
+.l .n{min-width:46px;padding:4px 0;border-radius:10px;background:var(--bd);position:relative}
+.n b{font-size:19px;line-height:1.2}
+.n small{display:block;line-height:1.25;font-variant-numeric:tabular-nums}
+.s{font-size:16px;letter-spacing:-.005em}
+.d{font-size:13px}
+.l.jn{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.l.jp{border-top-left-radius:0;border-top-right-radius:0}
+.tag{border-radius:999px;padding:3px 9px}
+.box{border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);line-height:1.4}
+.box b{font-size:14px;margin-bottom:6px}
+.box div{padding:3px 0}
+.box.none{border:1px solid var(--bd)}
+.box.none b{color:var(--tx)}
+.err,.new{border-radius:var(--r)}
+.st{padding:20px 8px}
+.free{display:flex;align-items:center;gap:10px;color:var(--mu);margin:4px 0 12px}
+.free::before,.free::after{content:"";flex:1;border-top:1px dashed var(--bd)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+/* menu boczne */
+#scrim{position:fixed;inset:0;background:var(--ov);opacity:0;pointer-events:none;transition:opacity .25s;z-index:29}
+#scrim.on{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;bottom:0;left:0;width:min(300px,84vw);background:var(--card);color:var(--tx);z-index:30;transform:translateX(-102%);transition:transform .26s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 16px) 12px calc(env(safe-area-inset-bottom) + 14px);box-shadow:8px 0 30px rgba(0,0,0,.3);border-radius:0 22px 22px 0;visibility:hidden}
+#drawer.on{transform:none;visibility:visible}
+.dh{display:flex;align-items:center;gap:12px;padding:6px 8px 18px}
+.dh b{display:block;font-size:18px}
+.dh small{color:var(--mu);font-size:13px}
+.logo{width:44px;height:44px;border-radius:14px;background:var(--ac);display:grid;place-items:center;font-size:22px}
+.di{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px;border-radius:14px;background:transparent;color:var(--tx);font-size:16px;margin-bottom:4px;transition:background .15s}
+.di i{font-style:normal;width:24px;text-align:center;font-size:18px}
+.di:active{background:var(--bd)}
+.di.on{background:var(--ac);color:#fff;font-weight:600}
+.dsep{height:1px;background:var(--bd);margin:10px 8px}
+.dv{margin-top:auto;padding:10px 14px;color:var(--mu);font-size:12px}
+.ver{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--bd);font-size:13px;color:var(--mu)}
+.ver b{color:var(--tx);font-variant-numeric:tabular-nums}
+.pan{border-radius:24px 24px 0 0}
+.seg button{border-radius:12px}
+@media(prefers-reduced-motion:reduce){#drawer,#scrim,.ico,.day{transition:none}}
 </style>
 </head>
 <body>
 <header>
   <div class="top">
-    <div><h1 id="ttl">Plan lekcji</h1><div class="sub" id="sub">ładowanie…</div></div>
-    <div><button class="ico" id="ref" aria-label="Odśwież">⟳</button><button class="ico" id="set" aria-label="Ustawienia">⚙</button></div>
+    <button class="ico" id="menu" aria-label="Menu">☰</button>
+    <div class="tt"><h1 id="ttl">Plan lekcji</h1><div class="sub" id="sub">ładowanie…</div></div>
+    <button class="ico" id="ref" aria-label="Odśwież">⟳</button>
   </div>
-  <div class="tabs"><button data-v="plan">📅 Plan</button><button data-v="subs">🔁 Zastępstwa</button></div>
   <div class="wk"><button id="pw">‹</button><span id="wl"></span><button id="nw">›</button></div>
   <div class="days" id="days"></div>
 </header>
+<div id="scrim"></div>
+<nav id="drawer" aria-label="Menu">
+  <div class="dh"><div class="logo">📚</div><div><b>Plan lekcji</b><small id="dcls"></small></div></div>
+  <button class="di" data-v="plan"><i>📅</i>Plan lekcji</button>
+  <button class="di" data-v="subs"><i>🔁</i>Zastępstwa</button>
+  <div class="dsep"></div>
+  <button class="di" id="set"><i>⚙</i>Ustawienia</button>
+  <button class="di" id="ref2"><i>⟳</i>Odśwież dane</button>
+  <div class="dv">Wersja <span class="verv"></span></div>
+</nav>
 <main id="main"><div class="st">Ładowanie…</div></main>
 
 <div id="sheet"><div class="pan">
@@ -99,9 +167,11 @@ main{padding:12px 12px calc(24px + env(safe-area-inset-bottom));max-width:640px;
   <label>Grupa</label><select id="selG"></select>
   <label>Plan lekcji</label><select id="selT"></select>
   <label>Własny proxy (opcjonalnie)</label><input id="px" type="url" placeholder="domyślnie: cwel.apollodwa.workers.dev" style="width:100%;padding:12px;border-radius:10px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);font-size:16px">
+  <div class="ver"><span>Wersja aplikacji</span><b class="verv"></b></div>
 </div></div>
 
 <script>
+const APP_VERSION='1.1.0',APP_DATE='27.10.2026';
 const BASE='https://tme.edupage.org';
 const DN=['Pon','Wt','Śr','Czw','Pt'];
 let LOG=[];
@@ -262,6 +332,7 @@ async function loadSubs(date,cls){
   const doc=new DOMParser().parseFromString(subHtml[date],'text/html');
   const names=[norm(cls.short),norm(cls.name)].filter(Boolean);
   const out=[];
+  out.total=doc.querySelectorAll('.row').length;
   doc.querySelectorAll('.section').forEach(sec=>{
     const h=norm((sec.querySelector('.header')||{}).textContent);
     if(!names.some(n=>h===n||h.startsWith(n+',')))return;
@@ -323,6 +394,7 @@ function applySubs(subs,lessons){
   lessons.push(...extras);
   return vis;
 }
+function emptyMsg(total){return total>0?'Brak zastępstw ✅':'Zastępstwa nie są jeszcze dostępne ⏳'}
 function itemHtml(s){return `<div>${s.label?esc(s.label)+'. ':''}${s.amb?'❔ ':s.cancelled?'❌ ':'🔁 '}${esc(s.text)}${s.amb?' <i>(może dotyczyć drugiej grupy)</i>':''}</div>`}
 
 /* ---------- render ---------- */
@@ -346,7 +418,7 @@ async function renderSubs(rid){
   try{if(!gshSub)gshSub=(await getGsh('/substitution/')).gsh}catch(e){}
   const all=buildDays(cls);
   const res=await Promise.all(days.map(async d=>{
-    try{const subs=await loadSubs(iso(d),cls);const w=(d.getDay()+6)%7;return{d,w,vis:applySubs(subs,all[w].map(l=>({...l})))}}
+    try{const subs=await loadSubs(iso(d),cls);const w=(d.getDay()+6)%7;return{d,w,total:subs.total||0,vis:applySubs(subs,all[w].map(l=>({...l})))}}
     catch(e){return{d,w:(d.getDay()+6)%7,err:e.message}}
   }));
   if(rid!==renderId)return;
@@ -354,7 +426,7 @@ async function renderSubs(rid){
   h+=res.map(r=>{
     const t=`<b>${DNL[r.w]} ${fmt(r.d)}${iso(r.d)===today?' · dziś':''}</b>`;
     if(r.err)return `<div class="box none">${t}<div>⚠ Nie udało się pobrać (${esc(r.err)})</div></div>`;
-    if(!r.vis.length)return `<div class="box none">${t}<div>Brak zmian ✅</div></div>`;
+    if(!r.vis.length)return `<div class="box none">${t}<div>${emptyMsg(r.total)}</div></div>`;
     return `<div class="box">${t}${r.vis.map(itemHtml).join('')}</div>`;
   }).join('');
   main.innerHTML=h;bindNew();
@@ -363,7 +435,7 @@ function setView(v){VIEW=v;LS.set('plan_view',v);render()}
 async function render(){
   const rid=++renderId,main=$('main');
   document.querySelector('header').classList.toggle('subsview',VIEW==='subs');
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));
+  document.querySelectorAll('.di[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));
   if(VIEW==='subs')return renderSubs(rid);
   const date=addDays(weekStart,sel),ds=iso(date),todayIso=iso(new Date());
   $('wl').textContent=fmt(weekStart)+' – '+fmt(addDays(weekStart,4));
@@ -381,6 +453,7 @@ async function render(){
   const lessons=buildDays(cls)[sel].map(l=>({...l}));
   const vis=applySubs(subs,lessons);
   if(subErr)h+=`<div class="err">${esc(subErr)}</div>`;
+  else if(!vis.length)h+=`<div class="box none"><div>${emptyMsg(subs.total||0)}</div></div>`;
   if(vis.length)h+=`<div class="box"><b>Zmiany w planie – ${DN[sel]} ${fmt(date)}</b>${vis.map(itemHtml).join('')}</div>`;
   const tiles=[];
   for(const l of lessons.filter(l=>l.vis))for(const [k,pt] of l.parts.entries())tiles.push({...l,period:pt.period,start:pt.start,end:pt.end,first:k===0});
@@ -425,7 +498,10 @@ function fillSettings(){
   st.innerHTML=`<option value="auto" ${S.tt==='auto'?'selected':''}>Automatycznie (aktualny${curTT&&S.tt==='auto'?': '+esc(curTT.name):''})</option>`+
     [...TTS].sort((a,b)=>b.from.localeCompare(a.from)).map(t=>`<option value="${t.num}" ${S.tt===t.num?'selected':''}>${esc(t.name)}${t.from?' · od '+esc(t.from):''}</option>`).join('');
 }
-$('set').onclick=()=>{fillSettings();$('sheet').classList.add('on')};
+function openMenu(){$('dcls').textContent='Klasa '+S.cls+(S.group?' · grupa '+S.group:'');$('drawer').classList.add('on');$('scrim').classList.add('on')}
+function closeMenu(){$('drawer').classList.remove('on');$('scrim').classList.remove('on')}
+document.querySelectorAll('.verv').forEach(e=>e.textContent='v'+APP_VERSION+' · '+APP_DATE);
+$('set').onclick=()=>{closeMenu();fillSettings();$('sheet').classList.add('on')};
 $('cl').onclick=()=>$('sheet').classList.remove('on');
 $('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').classList.remove('on')};
 document.querySelectorAll('#thm button').forEach(b=>b.onclick=()=>{S.theme=b.dataset.v;saveS();applyTheme();fillSettings()});
@@ -435,7 +511,16 @@ $('selT').onchange=e=>{S.tt=e.target.value;saveS();$('sheet').classList.remove('
 
 $('px').value=S.proxy||'';
 $('px').onchange=e=>{S.proxy=e.target.value.trim();saveS();$('sheet').classList.remove('on');loadAll()};
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+document.querySelectorAll('.di[data-v]').forEach(b=>b.onclick=()=>{closeMenu();setView(b.dataset.v)});
+$('ref2').onclick=()=>{closeMenu();loadAll()};
+$('menu').onclick=openMenu;
+$('scrim').onclick=closeMenu;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();$('sheet').classList.remove('on')}});
+(function(){let x0=null,y0=0;
+  document.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+  document.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=Math.abs(t.clientY-y0);
+    if(dy<50){if(x0<24&&dx>70)openMenu();else if($('drawer').classList.contains('on')&&dx<-70)closeMenu()}x0=null},{passive:true});
+})();
 $('ref').onclick=()=>loadAll();
 $('pw').onclick=()=>{weekStart=addDays(weekStart,-7);render()};
 $('nw').onclick=()=>{weekStart=addDays(weekStart,7);render()};
