@@ -53,8 +53,16 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 @keyframes d3{to{transform:translate(34vmax,-16vmax) scale(1.2)}}
 #snow{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity .8s}
 
-/* szkło */
-.hg,#drawer{backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%)}
+/* szkło — efekty ograniczone na urządzeniach mobilnych */
+.hg,#drawer{backdrop-filter:blur(10px) saturate(125%);-webkit-backdrop-filter:blur(10px) saturate(125%)}
+@media(max-width:600px){
+  .hg,#drawer{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  #bg i{animation-duration:40s!important}
+  .l,.box,.free{animation-duration:.28s}
+}
+@media(hover:none){
+  .l.now{animation:rise .28s ease-out both}
+}
 
 /* ===== nagłówek ===== */
 header{position:sticky;top:0;z-index:5;padding:calc(env(safe-area-inset-top) + 8px) 10px 0;max-width:660px;margin:0 auto}
@@ -176,6 +184,8 @@ body.nofx .hg,body.nofx #drawer{backdrop-filter:none;-webkit-backdrop-filter:non
 body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,body.nofx .di,body.nofx #ref.spin{animation:none!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
 @media(max-width:380px){h1{font-size:17px}.s{font-size:15px}.n{min-width:46px}.n b{font-size:19px}.l{padding:10px 10px 10px 16px;gap:10px}.day{font-size:12px}}
+@media(min-width:700px){.hg{padding:14px}.l{padding-top:14px;padding-bottom:14px}}
+@media(prefers-reduced-motion:reduce){#bg i{animation:none!important}.l.now{box-shadow:var(--gsh),0 0 0 2px var(--c)}}
 @media(min-width:700px){main{padding-top:20px}#sheet{align-items:center}.pan{border-radius:30px}}
 </style>
 </head>
@@ -220,7 +230,7 @@ body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,bod
 </div></div>
 
 <script>
-const APP_VERSION='1.3.1',APP_DATE='27.10.2026';
+const APP_VERSION='1.4.0',APP_DATE='27.10.2026';
 const BASE='https://tme.edupage.org';
 const DN=['Pon','Wt','Śr','Czw','Pt'];
 let LOG=[];
@@ -265,7 +275,9 @@ function snTick(t){if(!SN.run)return;const x=SN.x;x.clearRect(0,0,SN.w,SN.h);x.f
 function snowSet(on){const c=$('snow');if(on&&!SN.run){snSize();SN.run=true;c.style.opacity=1;SN.raf=requestAnimationFrame(snTick)}else if(!on&&SN.run){SN.run=false;cancelAnimationFrame(SN.raf);c.style.opacity=0}else if(!on)c.style.opacity=0}
 addEventListener('resize',()=>{if(SN.run)snSize();moveBub()});
 function applyTheme(){const r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme);
-  const on=S.fx&&!RM;document.body.classList.toggle('nofx',!on);snowSet(on&&S.theme==='snow'&&!document.body.classList.contains('sheetopen'));
+  const on=S.fx&&!RM;
+  document.body.classList.toggle('nofx',!on);
+  snowSet(on&&S.theme==='snow'&&!document.body.classList.contains('sheetopen'));
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(r).getPropertyValue('--bg').trim()||'#eaf0ff'}
 function moveBub(){const a=document.querySelector('.day.act'),b=$('bub');if(!b)return;if(!a||!a.offsetWidth){b.style.opacity=0;return}
   b.style.opacity=1;b.style.width=a.offsetWidth+'px';b.style.height=a.offsetHeight+'px';b.style.transform='translateX('+a.offsetLeft+'px)'}
@@ -281,20 +293,30 @@ function fmt(d){return d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0')}
 function step(t){$('sub').textContent=t;if(!RAW)$('main').innerHTML='<div class="st">'+esc(t)+'</div>'}
 function proxies(){
   const a=[];
-  const px=S.proxy||DEFAULT_PROXY;
+  const raw=(S.proxy||DEFAULT_PROXY).trim();
+  const px=raw.endsWith('/')||raw.endsWith('?')||raw.endsWith('&')?raw:raw+'/';
   a.push(['proxy',u=>px+(px.includes('?')?'&':'?')+'url='+encodeURIComponent(u)]);
   a.push(['bezpośrednio',u=>u],['corsproxy.io',u=>'https://corsproxy.io/?url='+encodeURIComponent(u)]);
   return a;
 }
 async function req(url,opt){
   let err;const short=url.replace(BASE,'');
-  for(const [n,p] of proxies()){
-    const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);
-    try{const r=await fetch(p(url),{...opt,signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.text()}
-    catch(e){err=e.name==='AbortError'?new Error('przekroczono czas oczekiwania (9 s)'):e;LOG.push(short.slice(0,40)+' ['+n+'] → '+err.message)}
-    finally{clearTimeout(t)}
+  // Krótsze limity zapobiegają długiemu „wiszeniu” aplikacji, gdy proxy nie odpowiada.
+  const chain=proxies();
+  for(let i=0;i<chain.length;i++){
+    const [n,p]=chain[i],c=new AbortController();
+    const timeout=i===0?6000:4500;
+    const t=setTimeout(()=>c.abort(),timeout);
+    try{
+      const r=await fetch(p(url),{...opt,signal:c.signal});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return await r.text();
+    }catch(e){
+      err=e.name==='AbortError'?new Error('przekroczono czas oczekiwania ('+(timeout/1000)+' s)'):e;
+      LOG.push(short.slice(0,40)+' ['+n+'] → '+err.message);
+    }finally{clearTimeout(t)}
   }
-  throw err;
+  throw err||new Error('Brak odpowiedzi z serwera');
 }
 async function getGsh(path){
   try{const h=await req(BASE+path);const m=h.match(/gsh["']?\s*[:=]\s*["']([0-9a-f]+)["']/i);return{gsh:m?m[1]:'00000000',html:h}}
@@ -409,11 +431,18 @@ function buildDays(cls){
   return days;
 }
 
+const subsPending=new Map();
 async function loadSubs(date,cls){
   if(subHtml[date]===undefined){
-    if(!gshSub)gshSub=(await getGsh('/substitution/')).gsh;
-    const d=await post('/substitution/server/viewer.js','getSubstViewerDayDataHtml',[null,{date,mode:'classes'}],gshSub);
-    subHtml[date]=d.r||'';
+    if(!subsPending.has(date)){
+      const pending=(async()=>{
+        if(!gshSub)gshSub=(await getGsh('/substitution/')).gsh;
+        const d=await post('/substitution/server/viewer.js','getSubstViewerDayDataHtml',[null,{date,mode:'classes'}],gshSub);
+        subHtml[date]=d.r||'';
+      })();
+      subsPending.set(date,pending);
+      try{await pending}finally{subsPending.delete(date)}
+    }else await subsPending.get(date);
   }
   const doc=new DOMParser().parseFromString(subHtml[date],'text/html');
   const names=[norm(cls.short),norm(cls.name)].filter(Boolean);
@@ -606,7 +635,15 @@ $('selG').onchange=e=>{S.group=e.target.value;saveS();render()};
 $('selT').onchange=e=>{S.tt=e.target.value;saveS();$('sheet').classList.remove('on');newPlan=null;loadAll()};
 
 $('px').value=S.proxy||'';
-$('px').onchange=e=>{S.proxy=e.target.value.trim();saveS();$('sheet').classList.remove('on');loadAll()};
+$('px').onchange=e=>{
+  const value=e.target.value.trim();
+  if(value){
+    try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error('protocol')}
+    catch(_){$('px').setCustomValidity('Podaj poprawny adres proxy zaczynający się od https:// lub http://');$('px').reportValidity();return}
+  }
+  $('px').setCustomValidity('');
+  S.proxy=value;saveS();$('sheet').classList.remove('on');loadAll();
+};
 document.querySelectorAll('.di[data-v]').forEach(b=>b.onclick=()=>{closeMenu();setView(b.dataset.v)});
 $('ref2').onclick=()=>{closeMenu();loadAll()};
 $('lite').onclick=()=>{S.fx=!S.fx;saveS();applyTheme();fillSettings()};
