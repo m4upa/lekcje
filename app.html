@@ -445,9 +445,22 @@ async function loadSubs(date,cls){
     }else await subsPending.get(date);
   }
   const doc=new DOMParser().parseFromString(subHtml[date],'text/html');
+  const pageText=(doc.body.textContent||'').replace(/\s+/g,' ').trim();
+  const noSubstitutionsForDay=/w tym dniu nie ma żadnych zastępstw/i.test(pageText);
   const names=[norm(cls.short),norm(cls.name)].filter(Boolean);
   const out=[];
-  out.total=doc.querySelectorAll('.row').length;
+  // EduPage zwraca jawny komunikat, gdy nie ma zastępstw dla żadnej klasy.
+  // Traktuj go jako źródło prawdy zamiast próbować wyliczać wiersze strony.
+  out.noSubstitutionsForDay=noSubstitutionsForDay;
+  // Liczymy tylko rzeczywiste wpisy zastępstw w sekcjach klas.
+  // Selektor .row poza sekcjami może wskazywać elementy układu strony i
+  // fałszywie sugerować, że danego dnia jakaś klasa ma zastępstwa.
+  const allRows=[...doc.querySelectorAll('.section .row')].filter(r=>{
+    const period=((r.querySelector('.period')||{}).textContent||'').trim();
+    const info=((r.querySelector('.info')||r).textContent||'').replace(/\\s+/g,' ').trim();
+    return !!(period||info);
+  });
+  out.total=noSubstitutionsForDay?0:allRows.length;
   doc.querySelectorAll('.section').forEach(sec=>{
     const h=norm((sec.querySelector('.header')||{}).textContent);
     if(!names.some(n=>h===n||h.startsWith(n+',')))return;
@@ -509,7 +522,7 @@ function applySubs(subs,lessons){
   lessons.push(...extras);
   return vis;
 }
-function emptyMsg(total){return total>0?'Nie wprowadzono zastępstw dla tej klasy':'Zastępstwa nie są jeszcze dostępne ⏳'}
+function emptyMsg(total){return total>0?'Nie wprowadzono zastępstw dla tej klasy':'W tym dniu nie ma żadnych zastępstw.'}
 function itemHtml(s){return `<div>${s.label?esc(s.label)+'. ':''}${s.amb?'❔ ':s.cancelled?'❌ ':'🔁 '}${esc(s.text)}${s.amb?' <i>(może dotyczyć drugiej grupy)</i>':''}</div>`}
 
 /* ---------- render ---------- */
