@@ -509,7 +509,7 @@ function applySubs(subs,lessons){
   lessons.push(...extras);
   return vis;
 }
-function emptyMsg(total){return total>0?'Brak zastępstw ✅':'Zastępstwa nie są jeszcze dostępne ⏳'}
+function emptyMsg(total){return total>0?'Nie wprowadzono zastępstw dla tej klasy':'Zastępstwa nie są jeszcze dostępne ⏳'}
 function itemHtml(s){return `<div>${s.label?esc(s.label)+'. ':''}${s.amb?'❔ ':s.cancelled?'❌ ':'🔁 '}${esc(s.text)}${s.amb?' <i>(może dotyczyć drugiej grupy)</i>':''}</div>`}
 
 /* ---------- render ---------- */
