@@ -146,7 +146,7 @@ main{position:relative;z-index:1;padding:14px 12px calc(28px + env(safe-area-ins
 .pan h2{font-size:19px;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .pan h2 button{background:color-mix(in srgb,var(--tx) 10%,transparent);border-radius:50%;width:34px;height:34px}
 .pan label{display:block;font-size:12px;color:var(--mu);margin:16px 0 8px;font-weight:600}
-.pan select,.pan input[type=url],.pan input[type=text]{width:100%;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--tx) 7%,transparent);border:1px solid var(--bd);font-size:16px}
+.pan select,.pan input[type=url]{width:100%;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--tx) 7%,transparent);border:1px solid var(--bd);font-size:16px}
 .pan select option{color:#0f172a;background:#fff}
 .thb{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--tx) 7%,transparent);border:1px solid var(--bd);font-size:15px;font-weight:600;text-align:left}
 .thb .sw2{flex:none;width:44px;height:30px;border-radius:10px;background:linear-gradient(110deg,var(--a) 50%,var(--b) 50%);border:1px solid var(--bd)}
@@ -174,20 +174,6 @@ body.nofx .hg,body.nofx #drawer{backdrop-filter:none;-webkit-backdrop-filter:non
 body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,body.nofx .di,body.nofx #ref.spin{animation:none!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
 @media(max-width:380px){h1{font-size:17px}.s{font-size:15px}.n{min-width:46px}.n b{font-size:19px}.l{padding:10px 10px 10px 16px;gap:10px}.day{font-size:12px}}
-/* ===== matrix ===== */
-.mxb{display:block;width:100%;padding:13px 14px;border-radius:16px;background:var(--ac);color:#fff;font-weight:650;font-size:15px;margin-bottom:12px;box-shadow:0 10px 22px -12px var(--ac)}
-.mxi{width:100%;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--tx) 7%,transparent);border:1px solid var(--bd);font-size:16px}
-.tag.ab{background:#ef4444;color:#fff}
-.l.abs{box-shadow:var(--gsh),0 0 0 2px #ef4444}
-.ar{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ar button{background:rgba(239,68,68,.16);color:#dc2626;border-radius:12px;padding:6px 12px;font-weight:650;font-size:13px}
-.pk{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
-.pk button{padding:10px;border-radius:14px;background:color-mix(in srgb,var(--tx) 7%,transparent);border:1px solid var(--bd);font-size:14px;text-align:left;line-height:1.25}
-.pk button small{display:block;color:var(--mu);font-size:11px}
-.pk button[aria-pressed=true]{background:var(--ac);color:#fff;border-color:var(--ac)}
-.pk button[aria-pressed=true] small{color:#fff}
-.mxs{display:block;width:100%;margin-top:16px;padding:14px;border-radius:16px;background:var(--ac);color:#fff;font-weight:650;font-size:16px}
-.mxs.alt{background:color-mix(in srgb,var(--tx) 10%,transparent);color:var(--tx);margin-top:10px}
 </style>
 </head>
 <body>
@@ -209,7 +195,6 @@ body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,bod
   <div class="dh"><div class="logo">📚</div><div><b>Plan lekcji</b><small id="dcls"></small></div></div>
   <button class="di" data-v="plan"><i>📅</i>Plan lekcji</button>
   <button class="di" data-v="subs"><i>🔁</i>Zastępstwa</button>
-  <button class="di" data-v="matrix"><i>🧮</i>Matrix</button>
   <div class="dsep"></div>
   <button class="di" id="set"><i>⚙</i>Ustawienia</button>
   <button class="di" id="ref2"><i>⟳</i>Odśwież dane</button>
@@ -219,8 +204,8 @@ body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,bod
 <main id="main"><div class="st">Ładowanie…</div></main>
 
 <div id="sheet"><div class="pan">
-  <h2><span id="shT">Ustawienia</span> <button id="cl" aria-label="Zamknij">✕</button></h2>
-  <div id="setpan"><label>Motyw</label>
+  <h2>Ustawienia <button id="cl" aria-label="Zamknij">✕</button></h2>
+  <label>Motyw</label>
   <button class="thb" id="thb" aria-expanded="false"><span class="sw2" id="thcur"></span><span id="thname">Motyw</span><i>▾</i></button>
   <div class="thl" id="thl"><div class="tiles" id="thm"></div></div>
   <button class="sw" id="fx" role="switch" aria-checked="true"><span>Animacje i efekty<br><small style="color:var(--mu)">tło, animowane motywy, rozmycia</small></span><i></i></button>
@@ -228,12 +213,11 @@ body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,bod
   <label>Grupa</label><select id="selG"></select>
   <label>Plan lekcji</label><select id="selT"></select>
   <label>Własny proxy (opcjonalnie)</label><input id="px" type="url" placeholder="domyślnie: cwel.apollodwa.workers.dev">
-  <div class="ver"><span>Wersja aplikacji</span><b class="verv"></b></div></div>
-  <div id="matpan" hidden></div>
+  <div class="ver"><span>Wersja aplikacji</span><b class="verv"></b></div>
 </div></div>
 
 <script>
-const APP_VERSION='1.6.0',APP_DATE='28.10.2026';
+const APP_VERSION='1.5.0',APP_DATE='28.10.2026';
 const BASE='https://tme.edupage.org';
 const DN=['Pon','Wt','Śr','Czw','Pt'];
 let LOG=[],PX_OK='';
@@ -598,7 +582,6 @@ async function render(){
   $('dbtn').innerHTML=DN.map((n,i)=>{const d=addDays(weekStart,i);return `<button class="day ${i==sel?'act':''} ${iso(d)==todayIso?'today':''}" data-i="${i}">${n}<small>${fmt(d)}</small></button>`}).join('');
   document.querySelectorAll('.day').forEach(b=>b.onclick=()=>{sel=+b.dataset.i;render()});
   moveBub();
-  if(VIEW==='matrix')return renderMatrix(rid,date,ds);
   let h=head();
   const cls=getClass();
   if(!RAW){main.innerHTML=h||'<div class="st">Ładowanie…</div>';bindNew();return}
@@ -636,79 +619,6 @@ async function render(){
 }
 function bindNew(){const b=$('goNew');if(b)b.onclick=()=>{S.tt=newPlan.num;saveS();newPlan=null;loadAll()}}
 
-/* ---------- matrix: nieobecności zapisywane w bazie na serwerze ---------- */
-let MX=[],mxAuth=true,mxErr='';
-async function mxApi(path,method,body){
-  const r=await fetch('/api/'+path,{method:method||'GET',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
-  const j=await r.json().catch(()=>({}));
-  if(r.status===401){mxAuth=false;throw Object.assign(new Error(j.error||'Zaloguj się'),{auth:true})}
-  if(!r.ok)throw new Error(j.error||('HTTP '+r.status));
-  return j;
-}
-async function mxLoad(){
-  try{MX=await mxApi('matrix');mxAuth=true;mxErr=''}
-  catch(e){MX=[];mxErr=e.auth?'':'Brak połączenia z bazą ('+e.message+'). Matrix działa tylko, gdy strona jest otwarta z serwera.'}
-}
-function mxTiles(cls){
-  const t=[];
-  for(const l of buildDays(cls)[sel].filter(l=>l.vis))for(const pt of l.parts)t.push({period:pt.period,start:pt.start,end:pt.end,name:l.name,short:l.short,teacher:l.teacher,room:l.room});
-  return t.sort((a,b)=>a.period-b.period);
-}
-function showPan(w){const m=w==='mat';$('setpan').hidden=m;$('matpan').hidden=!m;$('shT').textContent=m?'Nowa nieobecność':'Ustawienia'}
-async function renderMatrix(rid,date,ds){
-  const main=$('main'),cls=getClass();let h=head();
-  if(!RAW){main.innerHTML=h||'<div class="st">Ładowanie…</div>';bindNew();return}
-  if(!cls){main.innerHTML=h+`<div class="err">Nie znaleziono klasy „${esc(S.cls)}”. Wybierz klasę w ustawieniach ⚙.</div>`;bindNew();return}
-  $('ttl').textContent='Matrix '+(cls.short||cls.name)+(S.group?' · gr. '+S.group:'');
-  await mxLoad();if(rid!==renderId)return;
-  if(!mxAuth){
-    main.innerHTML=h+`<div class="box none"><b>🔒 Matrix wymaga logowania</b><div><input class="mxi" id="mxp" type="password" placeholder="Hasło" autocomplete="current-password"></div><div><button class="mxb" id="mxl">Zaloguj</button></div></div>`;bindNew();
-    const go=async()=>{try{await mxApi('login','POST',{password:$('mxp').value});render()}catch(e){alert(e.message)}};
-    $('mxl').onclick=go;$('mxp').onkeydown=e=>{if(e.key==='Enter')go()};return;
-  }
-  const key=cls.short||cls.name,tiles=mxTiles(cls);
-  const day=MX.filter(a=>a.date===ds&&a.cls===key);
-  if(mxErr)h+=`<div class="err">${esc(mxErr)}</div>`;
-  h+=`<button class="mxb" id="mxadd">＋ Dodaj nieobecność</button>`;
-  if(!tiles.length)h+='<div class="st idle">Brak lekcji tego dnia 🎉</div>';
-  tiles.forEach((l,i)=>{
-    const ab=day.filter(a=>a.periods.includes(l.period));
-    h+=`<div class="l ${ab.length?'abs':''}" style="--c:hsl(${hue(l)},70%,50%);--i:${Math.min(i,9)}">
-      <div class="n"><b>${l.period}</b><small>${esc(l.start)}<br>${esc(l.end)}</small></div>
-      <div class="i"><div class="s">${esc(l.name)}</div>
-      <div class="d">${esc([l.teacher,l.room&&'sala '+l.room].filter(Boolean).join(' · '))}</div>
-      ${ab.map(a=>`<span class="tag ab">${esc(a.name)}</span>`).join('')}</div></div>`;
-  });
-  if(day.length)h+=`<div class="box none"><b>Nieobecności – ${DN[sel]} ${fmt(date)}</b>${day.map(a=>`<div class="ar"><span>${esc(a.name)} · lekcje ${a.periods.join(', ')}</span><button data-del="${esc(a.id)}">Usuń</button></div>`).join('')}</div>`;
-  main.innerHTML=h;bindNew();
-  $('mxadd').onclick=()=>mxOpen(ds,key,tiles);
-  main.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
-    b.disabled=true;
-    try{await mxApi('matrix/'+encodeURIComponent(b.dataset.del),'DELETE')}catch(e){alert(e.message)}
-    render();
-  });
-}
-function mxOpen(ds,key,tiles){
-  if(!tiles.length)return;
-  showPan('mat');
-  $('matpan').innerHTML=`<label>Imię</label><input class="mxi" id="mxn" type="text" maxlength="50" placeholder="np. Adam" autocomplete="off">
-    <label>Lekcje, na których nie będzie</label>
-    <div class="pk" id="mxk">${tiles.map(l=>`<button type="button" data-p="${l.period}" aria-pressed="false">${l.period}. ${esc(l.name)}<small>${esc(l.start)}–${esc(l.end)}</small></button>`).join('')}</div>
-    <button class="mxs alt" id="mxall" type="button">Zaznacz wszystkie</button>
-    <button class="mxs" id="mxsave" type="button">Zapisz</button>`;
-  const pk=$('mxk');
-  pk.onclick=e=>{const b=e.target.closest('button');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true')};
-  $('mxall').onclick=()=>{const bs=[...pk.children],on=bs.some(b=>b.getAttribute('aria-pressed')!=='true');bs.forEach(b=>b.setAttribute('aria-pressed',on?'true':'false'))};
-  $('mxsave').onclick=async()=>{
-    const name=$('mxn').value.trim(),periods=[...pk.children].filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>+b.dataset.p);
-    if(!name){$('mxn').focus();return}
-    if(!periods.length){alert('Zaznacz co najmniej jedną lekcję');return}
-    try{await mxApi('matrix','POST',{name,date:ds,periods,cls:key});$('sheet').classList.remove('on');render()}
-    catch(e){alert(e.message);if(e.auth){$('sheet').classList.remove('on');render()}}
-  };
-  $('sheet').classList.add('on');$('mxn').focus();
-}
-
 /* ---------- ustawienia ---------- */
 function fillSettings(){
   document.querySelectorAll('#thm button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.theme));
@@ -736,7 +646,7 @@ function fillSettings(){
 function openMenu(){$('dcls').textContent='Klasa '+S.cls+(S.group?' · grupa '+S.group:'');$('drawer').classList.add('on');$('scrim').classList.add('on')}
 function closeMenu(){$('drawer').classList.remove('on');$('scrim').classList.remove('on')}
 document.querySelectorAll('.verv').forEach(e=>e.textContent='v'+APP_VERSION+' · '+APP_DATE);
-$('set').onclick=()=>{showPan('set');const d=$('drawer'),sc=$('scrim');d.style.transition=sc.style.transition='none';closeMenu();fillSettings();$('sheet').classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.transition=sc.style.transition=''}))};
+$('set').onclick=()=>{const d=$('drawer'),sc=$('scrim');d.style.transition=sc.style.transition='none';closeMenu();fillSettings();$('sheet').classList.add('on');requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.transition=sc.style.transition=''}))};
 $('cl').onclick=()=>$('sheet').classList.remove('on');
 $('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').classList.remove('on')};
 $('thm').innerHTML=THEMES.map(t=>`<button data-v="${t.k}" style="--a:${t.a};--b:${t.b}"><span>${t.n}</span></button>`).join('');
