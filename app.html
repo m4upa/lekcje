@@ -217,7 +217,7 @@ body.nofx #bg i,body.nofx .l,body.nofx .box,body.nofx .free,body.nofx .l.now,bod
 </div></div>
 
 <script>
-const APP_VERSION='1.5.0',APP_DATE='28.10.2026';
+const APP_VERSION='1.5.1',APP_DATE='28.10.2026';
 const BASE='https://tme.edupage.org';
 const DN=['Pon','Wt','Śr','Czw','Pt'];
 let LOG=[],PX_OK='';
@@ -529,7 +529,7 @@ function applySubs(subs,lessons){
     const ok=vt.filter(l=>l.whole||covers);
     if(!ok.length){vis.push({...s,amb:true});continue}
     vis.push(s);
-    ok.forEach(l=>{if(s.cancelled){l.cancelled=true;if(/przeniesion\w*\s+na/i.test(s.text))l.movedOut=true}else l.change=(l.change?l.change+' | ':'')+s.text});
+    ok.forEach(l=>{const ps=l.parts.filter(pt=>s.periods.length?s.periods.includes(pt.period):(s.start&&String(pt.start).replace(/^0/,'')===s.start));(ps.length?ps:l.parts).forEach(pt=>{if(s.cancelled){pt.cancelled=true;if(/przeniesion\w*\s+na/i.test(s.text))pt.movedOut=true}else pt.change=(pt.change?pt.change+' | ':'')+s.text})});
   }
   lessons.push(...extras);
   return vis;
@@ -597,7 +597,7 @@ async function render(){
   else if(!vis.length)h+=`<div class="box none"><div>${emptyMsg(subs.total||0)}</div></div>`;
   if(vis.length)h+=`<div class="box"><b>Zmiany w planie – ${DN[sel]} ${fmt(date)}</b>${vis.map(itemHtml).join('')}</div>`;
   const tiles=[];
-  for(const l of lessons.filter(l=>l.vis))for(const [k,pt] of l.parts.entries())tiles.push({...l,period:pt.period,start:pt.start,end:pt.end,first:k===0});
+  for(const l of lessons.filter(l=>l.vis))for(const [k,pt] of l.parts.entries())tiles.push({...l,period:pt.period,start:pt.start,end:pt.end,cancelled:pt.cancelled||l.cancelled,movedOut:pt.movedOut||l.movedOut,change:pt.change||l.change,first:true});
   tiles.sort((a,b)=>a.period-b.period);
   if(!tiles.length)h+='<div class="st idle">Brak lekcji tego dnia 🎉</div>';
   const same=(a,b)=>a&&b&&a.period+1===b.period&&a.name===b.name&&a.teacher===b.teacher&&a.room===b.room&&!!a.cancelled===!!b.cancelled;
